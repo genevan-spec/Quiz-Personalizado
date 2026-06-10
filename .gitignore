@@ -28,6 +28,8 @@ dist-ssr
 !.env.example
 !apps/backend/.env.example
 !apps/frontend/.env.example
+.env.container
+!.env.container.example
 
 # Chaves RSA (nunca commitar chaves privadas)
 apps/backend/keys/

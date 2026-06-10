@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Containerfile.backend — build multi-stage (Node builder → Node runtime slim)
+# Contexto de build: raiz do monorepo
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: Builder ──────────────────────────────────────────────────────────
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copiar manifests para cache de layers
+COPY package.json yarn.lock ./
+COPY apps/backend/package.json apps/backend/
+
+# Instalar dependências do workspace backend (inclui devDependencies para prisma CLI)
+RUN yarn workspace backend install --frozen-lockfile
+
+# Copiar código-fonte do backend
+COPY apps/backend/ apps/backend/
+
+# Gerar Prisma Client (necessário antes do runtime)
+RUN yarn workspace backend db:generate
+
+# ── Stage 2: Runtime slim ─────────────────────────────────────────────────────
+FROM node:22-alpine AS runner
+
+ENV NODE_ENV=production
+
+# Utilizador não-root para segurança (rootless-friendly com Podman)
+RUN addgroup -g 1001 -S nodejs \
+ && adduser  -u 1001 -S fastify -G nodejs
+
+WORKDIR /app
+
+# Copiar apenas o necessário para produção
+COPY --from=builder --chown=fastify:nodejs /app/package.json         ./
+COPY --from=builder --chown=fastify:nodejs /app/yarn.lock            ./
+COPY --from=builder --chown=fastify:nodejs /app/node_modules         ./node_modules
+COPY --from=builder --chown=fastify:nodejs /app/apps/backend         ./apps/backend
+
+# Tornar o entrypoint executável
+RUN chmod +x apps/backend/entrypoint.sh
+
+USER fastify
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget -qO- http://localhost:3000/health || exit 1
+
+WORKDIR /app/apps/backend
+
+CMD ["/bin/sh", "entrypoint.sh"]

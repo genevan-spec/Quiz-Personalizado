@@ -1,0 +1,40 @@
+# .containerignore — exclui ficheiros desnecessários do contexto de build
+# Reduz o tamanho do contexto enviado para o daemon e acelera os builds
+
+# Dependências (geridas dentro do container)
+node_modules
+*/node_modules
+**/node_modules
+
+# Artefactos de build
+dist
+*/dist
+apps/frontend/dist
+
+# Chaves privadas (nunca incluir em imagens)
+apps/backend/keys/
+
+# Git e IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Ficheiros de ambiente locais
+.env
+apps/frontend/.env
+apps/backend/.env
+# .env.container é necessário para o podman-compose mas não para o build
+.env.container
+.env.container.example
+
+# Logs e temporários
+*.log
+*.tmp
+coverage
+.nyc_output
+
+# Documentação
+*.md
+PLANO.md
+README.md
