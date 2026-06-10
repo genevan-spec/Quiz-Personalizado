@@ -51,7 +51,7 @@ test.describe('AuthModal', () => {
     await page.getByLabel(/password/i).fill('errado');
     await page.getByRole('button', { name: /entrar/i }).click();
 
-    await expect(page.getByRole('alert')).toContainText(/credenciais inválidas/i);
+    await expect(page.getByRole('alert').filter({ hasText: /credenciais inválidas/i })).toBeVisible();
   });
 
   test('fecha modal após login bem sucedido', async ({ page }) => {

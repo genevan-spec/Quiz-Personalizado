@@ -33,7 +33,7 @@ function ThemedLayout() {
       </main>
 
       <footer className="app-footer">
-        <p>Feito por Smilley 🇦🇴</p>
+        <p>LCC3M 🇦🇴</p>
       </footer>
     </div>
   );
