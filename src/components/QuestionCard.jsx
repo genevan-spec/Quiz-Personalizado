@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function QuestionCard({
   question,
   onAnswer,
-  questionNumber,
   lifelinesUsed,
   onUseFiftyFifty,
   onUseSkip
@@ -129,5 +129,24 @@ function QuestionCard({
     </div>
   );
 }
+
+QuestionCard.propTypes = {
+  question: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    question: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(PropTypes.string).isRequired,
+    correctAnswer: PropTypes.number.isRequired,
+    explanation: PropTypes.string,
+    hint: PropTypes.string,
+    category: PropTypes.string.isRequired,
+  }).isRequired,
+  onAnswer: PropTypes.func.isRequired,
+  lifelinesUsed: PropTypes.shape({
+    fiftyFifty: PropTypes.bool.isRequired,
+    skip: PropTypes.bool.isRequired,
+  }).isRequired,
+  onUseFiftyFifty: PropTypes.func.isRequired,
+  onUseSkip: PropTypes.func.isRequired,
+};
 
 export default QuestionCard;

@@ -682,3 +682,109 @@
     padding: 2rem 1.25rem;
   }
 }
+
+/* ============================================
+   Error Boundary
+   ============================================ */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: var(--bg-dark, #0f0b1a);
+}
+
+.error-boundary__content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-boundary__icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.error-boundary__content h2 {
+  color: #f87171;
+  margin-bottom: 0.5rem;
+}
+
+.error-boundary__content p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+}
+
+.error-boundary__detail {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #fbbf24;
+  text-align: left;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.error-boundary__btn {
+  background: var(--primary, #6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.error-boundary__btn:hover {
+  opacity: 0.85;
+}
+
+/* ============================================
+   Páginas de placeholder (Leaderboard / 404)
+   ============================================ */
+.placeholder-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+.placeholder-page__icon {
+  font-size: 3.5rem;
+}
+
+.placeholder-page h2 {
+  font-size: 1.6rem;
+  color: var(--primary, #6366f1);
+}
+
+.placeholder-page p {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+}
+
+.placeholder-page .btn {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.placeholder-page .btn-primary {
+  background: var(--primary, #6366f1);
+  color: #fff;
+}
+
+.placeholder-page .btn-primary:hover {
+  opacity: 0.85;
+}

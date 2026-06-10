@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function WelcomeScreen({ onStart }) {
   const [name, setName] = useState('');
@@ -95,5 +96,9 @@ function WelcomeScreen({ onStart }) {
     </div>
   );
 }
+
+WelcomeScreen.propTypes = {
+  onStart: PropTypes.func.isRequired,
+};
 
 export default WelcomeScreen;

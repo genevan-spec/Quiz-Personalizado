@@ -11,6 +11,8 @@
  * - total: número total de perguntas (ex: 10)
  */
 
+import PropTypes from 'prop-types';
+
 function ProgressBar({ current, total }) {
   // Calcula a percentagem de progresso
   const percentage = ((current) / total) * 100;
@@ -33,5 +35,10 @@ function ProgressBar({ current, total }) {
     </div>
   );
 }
+
+ProgressBar.propTypes = {
+  current: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+};
 
 export default ProgressBar;

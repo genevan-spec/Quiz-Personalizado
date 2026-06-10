@@ -14,6 +14,8 @@
  * - lifelinesUsed: registo das ajudas gastas durante o jogo
  * - onRestart: callback para recomeçar o quiz
  */
+import PropTypes from 'prop-types';
+
 function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
   const percentage = Math.round((score / total) * 100);
 
@@ -91,5 +93,16 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
     </div>
   );
 }
+
+ResultScreen.propTypes = {
+  playerName: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+  lifelinesUsed: PropTypes.shape({
+    fiftyFifty: PropTypes.bool.isRequired,
+    skip: PropTypes.bool.isRequired,
+  }).isRequired,
+  onRestart: PropTypes.func.isRequired,
+};
 
 export default ResultScreen;
