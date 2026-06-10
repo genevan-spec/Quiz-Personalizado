@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { QuizProvider, useQuiz } from './context/QuizContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import HomePage from './pages/HomePage';
@@ -39,13 +40,15 @@ function ThemedLayout() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <QuizProvider>
-          <ThemedLayout />
-        </QuizProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <QuizProvider>
+            <ThemedLayout />
+          </QuizProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

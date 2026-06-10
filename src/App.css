@@ -788,3 +788,82 @@
 .placeholder-page .btn-primary:hover {
   opacity: 0.85;
 }
+
+/* ============================================
+   SKELETON — Loading placeholders
+   ============================================ */
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton__block {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.06) 25%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.06) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+/* Question skeleton */
+.skeleton--question {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.skeleton__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeleton__lifelines {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skeleton__block--badge  { width: 90px;  height: 28px; }
+.skeleton__block--btn    { width: 70px;  height: 36px; border-radius: 10px; }
+.skeleton__block--title  { width: 100%;  height: 22px; }
+.skeleton__block--title-short { width: 65%; }
+.skeleton__options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.skeleton__block--option { width: 100%; height: 60px; border-radius: 12px; }
+
+/* Leaderboard skeleton */
+.skeleton--leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.skeleton__block--rank  { width: 32px;  height: 32px; border-radius: 50%; flex-shrink: 0; }
+.skeleton__block--name  { flex: 1;      height: 18px; }
+.skeleton__block--score { width: 60px;  height: 18px; flex-shrink: 0; }
+

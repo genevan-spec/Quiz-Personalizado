@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import ResultScreen from '../components/ResultScreen';
 import { useQuiz } from '../context/QuizContext';
 
@@ -17,13 +18,19 @@ function ResultsPage() {
   }
 
   return (
-    <ResultScreen
-      playerName={playerName}
-      score={score}
-      total={quizQuestions.length}
-      lifelinesUsed={lifelinesUsed}
-      onRestart={handleRestart}
-    />
+    <>
+      <Helmet>
+        <title>Resultados de {playerName} — Quiz de Cultura Geral</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      <ResultScreen
+        playerName={playerName}
+        score={score}
+        total={quizQuestions.length}
+        lifelinesUsed={lifelinesUsed}
+        onRestart={handleRestart}
+      />
+    </>
   );
 }
 

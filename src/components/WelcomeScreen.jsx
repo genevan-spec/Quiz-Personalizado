@@ -18,16 +18,16 @@ function WelcomeScreen({ onStart }) {
   };
 
   return (
-    <div className="welcome-screen">
-      <div className="welcome-icon">🧠</div>
+    <main className="welcome-screen" aria-labelledby="welcome-heading">
+      <div className="welcome-icon" aria-hidden="true">🧠</div>
 
-      <h1 className="welcome-title">Quiz de Cultura Geral</h1>
+      <h1 id="welcome-heading" className="welcome-title">Quiz de Cultura Geral</h1>
 
       <p className="welcome-description">
         Angola, África e muito mais — vê até onde vai o teu conhecimento!
       </p>
 
-      <form onSubmit={handleSubmit} className="customizer-form">
+      <form onSubmit={handleSubmit} className="customizer-form" aria-label="Configurar quiz">
         
         <div className="form-group">
           <label htmlFor="player-name">O teu nome</label>
@@ -39,7 +39,10 @@ function WelcomeScreen({ onStart }) {
             onChange={(e) => setName(e.target.value)}
             maxLength={20}
             className="form-input"
+            autoComplete="given-name"
+            aria-describedby="player-name-hint"
           />
+          <span id="player-name-hint" className="sr-only">Máximo de 20 caracteres. Deixa em branco para jogar como Anónimo.</span>
         </div>
 
         <div className="form-group">
@@ -74,7 +77,7 @@ function WelcomeScreen({ onStart }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="theme-select">Tema</label>
+            <label htmlFor="theme-select">Tema visual</label>
             <select
               id="theme-select"
               value={theme}
@@ -88,12 +91,12 @@ function WelcomeScreen({ onStart }) {
           </div>
         </div>
 
-        <button type="submit" id="start-quiz-btn" className="btn-primary start-form-btn">
+        <button type="submit" id="start-quiz-btn" className="btn-primary start-form-btn" aria-label="Começar o quiz">
           Começar
-          <span className="btn-arrow">→</span>
+          <span className="btn-arrow" aria-hidden="true">→</span>
         </button>
       </form>
-    </div>
+    </main>
   );
 }
 

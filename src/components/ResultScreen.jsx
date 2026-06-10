@@ -32,10 +32,10 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
   const message = getMessage();
 
   return (
-    <div className="result-screen">
-      <div className="result-emoji">{message.emoji}</div>
+    <main className="result-screen" aria-labelledby="result-heading">
+      <div className="result-emoji" aria-hidden="true">{message.emoji}</div>
 
-      <h2 className="result-title">Quiz Concluído!</h2>
+      <h1 id="result-heading" className="result-title">Quiz Concluído!</h1>
       
       {/* Saudação Personalizada */}
       <p className="result-welcome">
@@ -43,8 +43,12 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
       </p>
 
       {/* Círculo Gráfico de Pontuação */}
-      <div className="score-circle">
-        <svg viewBox="0 0 120 120" className="score-svg">
+      <div
+        className="score-circle"
+        role="img"
+        aria-label={`Pontuação: ${score} de ${total} — ${percentage}% de aproveitamento`}
+      >
+        <svg viewBox="0 0 120 120" className="score-svg" aria-hidden="true">
           <circle
             cx="60" cy="60" r="52"
             fill="none"
@@ -68,7 +72,7 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
             </linearGradient>
           </defs>
         </svg>
-        <div className="score-text">
+        <div className="score-text" aria-hidden="true">
           <span className="score-number">{score}</span>
           <span className="score-divider">/{total}</span>
         </div>
@@ -78,19 +82,24 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
       <p className="result-message">{message.text}</p>
 
       {/* Resumo de Ajudas Usadas */}
-      <div className="result-stats-summary">
-        <span className="result-stat-badge">
-          ⚖️ 50/50: {lifelinesUsed.fiftyFifty ? "Usado" : "Não Usado"}
+      <div className="result-stats-summary" role="list" aria-label="Ajudas utilizadas">
+        <span className="result-stat-badge" role="listitem">
+          <span aria-hidden="true">⚖️</span> 50/50: {lifelinesUsed.fiftyFifty ? "Usado" : "Não Usado"}
         </span>
-        <span className="result-stat-badge">
-          ⏭️ Pulo: {lifelinesUsed.skip ? "Usado" : "Não Usado"}
+        <span className="result-stat-badge" role="listitem">
+          <span aria-hidden="true">⏭️</span> Pulo: {lifelinesUsed.skip ? "Usado" : "Não Usado"}
         </span>
       </div>
 
-      <button id="restart-quiz-btn" className="btn-primary" onClick={onRestart}>
-        Jogar Novamente 🔄
+      <button
+        id="restart-quiz-btn"
+        className="btn-primary"
+        onClick={onRestart}
+        aria-label="Jogar novamente"
+      >
+        Jogar Novamente <span aria-hidden="true">🔄</span>
       </button>
-    </div>
+    </main>
   );
 }
 

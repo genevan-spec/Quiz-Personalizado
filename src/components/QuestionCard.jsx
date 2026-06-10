@@ -52,19 +52,20 @@ function QuestionCard({
   };
 
   return (
-    <div className="question-card">
+    <div className="question-card" role="region" aria-label="Pergunta do quiz">
       <div className="card-header-row">
-        <span className="category-badge">{question.category}</span>
+        <span className="category-badge" aria-label={`Categoria: ${question.category}`}>{question.category}</span>
         
-        <div className="lifelines-container">
+        <div className="lifelines-container" role="group" aria-label="Ajudas disponíveis">
           <button
             type="button"
             className="lifeline-btn"
             onClick={() => setShowHint(true)}
             disabled={showHint || answered}
-            title="Mostrar dica"
+            aria-label="Mostrar dica"
+            aria-pressed={showHint}
           >
-            💡 Dica
+            <span aria-hidden="true">💡</span> Dica
           </button>
 
           <button
@@ -72,9 +73,10 @@ function QuestionCard({
             className="lifeline-btn"
             onClick={handleFiftyFiftyClick}
             disabled={lifelinesUsed.fiftyFifty || answered}
-            title="Eliminar duas opções erradas"
+            aria-label={lifelinesUsed.fiftyFifty ? 'Ajuda 50/50 já utilizada' : 'Eliminar duas opções erradas (50/50)'}
+            aria-pressed={lifelinesUsed.fiftyFifty}
           >
-            ⚖️ 50/50 {lifelinesUsed.fiftyFifty && <span className="lifeline-badge">usado</span>}
+            <span aria-hidden="true">⚖️</span> 50/50 {lifelinesUsed.fiftyFifty && <span className="lifeline-badge" aria-hidden="true">usado</span>}
           </button>
 
           <button
@@ -82,34 +84,40 @@ function QuestionCard({
             className="lifeline-btn"
             onClick={onUseSkip}
             disabled={lifelinesUsed.skip || answered}
-            title="Passar à próxima"
+            aria-label={lifelinesUsed.skip ? 'Ajuda saltar já utilizada' : 'Passar à próxima pergunta'}
+            aria-pressed={lifelinesUsed.skip}
           >
-            ⏭️ Saltar {lifelinesUsed.skip && <span className="lifeline-badge">usado</span>}
+            <span aria-hidden="true">⏭️</span> Saltar {lifelinesUsed.skip && <span className="lifeline-badge" aria-hidden="true">usado</span>}
           </button>
         </div>
       </div>
 
       {showHint && question.hint && (
-        <div className="hint-box">
-          <span className="hint-icon">💡</span>
+        <div className="hint-box" role="note" aria-live="polite">
+          <span className="hint-icon" aria-hidden="true">💡</span>
           <p><strong>Dica:</strong> {question.hint}</p>
         </div>
       )}
 
-      <h2 className="question-text">{question.question}</h2>
+      <h2 className="question-text" id="question-heading">{question.question}</h2>
 
-      <div className="options-grid">
+      <div className="options-grid" role="group" aria-labelledby="question-heading">
         {question.options.map((option, index) => {
           const isEliminated = eliminatedOptions.includes(index);
+          const optClass = getOptionClass(index);
+          const isCorrect = answered && index === question.correctAnswer;
+          const isWrong = answered && index === selectedOption && index !== question.correctAnswer;
           return (
             <button
               key={index}
               id={`option-${index}`}
-              className={`option-btn ${getOptionClass(index)}`}
+              className={`option-btn ${optClass}`}
               onClick={() => handleOptionClick(index)}
               disabled={answered || isEliminated}
+              aria-disabled={answered || isEliminated}
+              aria-label={`Opção ${String.fromCharCode(65 + index)}: ${option}${isEliminated ? ' — eliminada' : ''}${isCorrect ? ' — correta' : ''}${isWrong ? ' — errada' : ''}`}
             >
-              <span className="option-letter">
+              <span className="option-letter" aria-hidden="true">
                 {String.fromCharCode(65 + index)}
               </span>
               <span className="option-text">{option}</span>
@@ -119,8 +127,12 @@ function QuestionCard({
       </div>
 
       {answered && (
-        <div className={`explanation ${selectedOption === question.correctAnswer ? 'correct' : 'wrong'}`}>
-          <span className="explanation-icon">
+        <div
+          className={`explanation ${selectedOption === question.correctAnswer ? 'correct' : 'wrong'}`}
+          role="alert"
+          aria-live="assertive"
+        >
+          <span className="explanation-icon" aria-hidden="true">
             {selectedOption === question.correctAnswer ? '✅' : '❌'}
           </span>
           <p>{question.explanation}</p>

@@ -18,15 +18,22 @@ function ProgressBar({ current, total }) {
   const percentage = ((current) / total) * 100;
 
   return (
-    <div className="progress-container">
+    <div className="progress-container" role="region" aria-label="Progresso do quiz">
       {/* Texto do progresso */}
-      <div className="progress-text">
+      <div className="progress-text" aria-live="polite" aria-atomic="true">
         <span>Pergunta {current + 1} de {total}</span>
         <span>{Math.round(percentage)}%</span>
       </div>
 
       {/* Barra visual */}
-      <div className="progress-bar">
+      <div
+        className="progress-bar"
+        role="progressbar"
+        aria-valuenow={Math.round(percentage)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Progresso: ${Math.round(percentage)}%`}
+      >
         <div
           className="progress-fill"
           style={{ width: `${percentage}%` }}

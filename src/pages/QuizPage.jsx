@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import QuestionCard from '../components/QuestionCard';
 import ProgressBar from '../components/ProgressBar';
 import { useQuiz } from '../context/QuizContext';
@@ -48,6 +49,9 @@ function QuizPage() {
 
   return (
     <>
+      <Helmet>
+        <title>Pergunta {currentQuestion + 1} / {quizQuestions.length} — Quiz</title>
+      </Helmet>
       <ProgressBar
         current={currentQuestion}
         total={quizQuestions.length}
