@@ -17,5 +17,10 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // react-hooks v7 introduziu esta regra mas é demasiado estrita para
+      // padrões válidos como setState dentro de useEffect async (fetch, reset).
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
 ])

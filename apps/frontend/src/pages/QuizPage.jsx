@@ -55,7 +55,7 @@ function QuizPage() {
   return (
     <>
       <Helmet>
-        <title>Pergunta {currentQuestion + 1} / {quizQuestions.length} — Quiz</title>
+        <title>{`Pergunta ${currentQuestion + 1} / ${quizQuestions.length} — Quiz`}</title>
       </Helmet>
 
       <Toaster

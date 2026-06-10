@@ -12,12 +12,9 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 function QuestionTimer({ duration = 30, onTimeUp, paused = false }) {
   const [remaining, setRemaining] = useState(duration);
   const onTimeUpRef = useRef(onTimeUp);
-  onTimeUpRef.current = onTimeUp;
 
-  // Reset quando a pergunta muda (duration prop muda ou componente remonta)
-  useEffect(() => {
-    setRemaining(duration);
-  }, [duration]);
+  // Mantém a referência actualizada sem re-criar o intervalo
+  useEffect(() => { onTimeUpRef.current = onTimeUp; }, [onTimeUp]);
 
   useEffect(() => {
     if (paused || remaining <= 0) return;
