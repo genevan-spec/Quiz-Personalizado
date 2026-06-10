@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { Toaster } from 'react-hot-toast';
 import QuestionCard from '../components/QuestionCard';
 import ProgressBar from '../components/ProgressBar';
 import { useQuiz } from '../context/QuizContext';
@@ -9,11 +10,13 @@ function QuizPage() {
   const {
     quizQuestions,
     currentQuestion,
+    streak,
     lifelinesUsed,
     answerQuestion,
     advanceQuestion,
     activateFiftyFifty,
     activateSkip,
+    finishQuiz,
   } = useQuiz();
   const navigate = useNavigate();
 
@@ -31,6 +34,7 @@ function QuizPage() {
     answerQuestion(isCorrect);
     setTimeout(() => {
       if (isLastQuestion) {
+        finishQuiz();
         navigate('/resultados');
       } else {
         advanceQuestion();
@@ -41,6 +45,7 @@ function QuizPage() {
   const handleSkip = () => {
     activateSkip();
     if (isLastQuestion) {
+      finishQuiz();
       navigate('/resultados');
     } else {
       advanceQuestion();
@@ -52,6 +57,20 @@ function QuizPage() {
       <Helmet>
         <title>Pergunta {currentQuestion + 1} / {quizQuestions.length} — Quiz</title>
       </Helmet>
+
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: 'rgba(30, 20, 50, 0.95)',
+            color: '#f1f5f9',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px',
+            backdropFilter: 'blur(10px)',
+          },
+        }}
+      />
+
       <ProgressBar
         current={currentQuestion}
         total={quizQuestions.length}
@@ -63,6 +82,7 @@ function QuizPage() {
         lifelinesUsed={lifelinesUsed}
         onUseFiftyFifty={activateFiftyFifty}
         onUseSkip={handleSkip}
+        streak={streak}
       />
     </>
   );

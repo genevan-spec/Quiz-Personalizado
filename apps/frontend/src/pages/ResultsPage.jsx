@@ -4,7 +4,7 @@ import ResultScreen from '../components/ResultScreen';
 import { useQuiz } from '../context/QuizContext';
 
 function ResultsPage() {
-  const { playerName, score, quizQuestions, lifelinesUsed, resetQuiz } = useQuiz();
+  const { playerName, score, quizQuestions, lifelinesUsed, maxStreak, totalTimeMs, resetQuiz } = useQuiz();
   const navigate = useNavigate();
 
   const handleRestart = () => {
@@ -28,6 +28,8 @@ function ResultsPage() {
         score={score}
         total={quizQuestions.length}
         lifelinesUsed={lifelinesUsed}
+        maxStreak={maxStreak}
+        totalTimeMs={totalTimeMs}
         onRestart={handleRestart}
       />
     </>

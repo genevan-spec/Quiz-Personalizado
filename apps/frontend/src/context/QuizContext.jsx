@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import allQuestions from '../data/questions';
 
@@ -29,6 +29,10 @@ export function QuizProvider({ children }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [lifelinesUsed, setLifelinesUsed] = useState({ fiftyFifty: false, skip: false });
+  const [streak, setStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
+  const [totalTimeMs, setTotalTimeMs] = useState(0);
+  const startTimeRef = useRef(null);
 
   const startQuiz = useCallback(({ name, category, limit, theme: selectedTheme }) => {
     setPlayerName(name || 'Anónimo');
@@ -36,6 +40,10 @@ export function QuizProvider({ children }) {
     setLifelinesUsed({ fiftyFifty: false, skip: false });
     setCurrentQuestion(0);
     setScore(0);
+    setStreak(0);
+    setMaxStreak(0);
+    setTotalTimeMs(0);
+    startTimeRef.current = Date.now();
 
     const filtered =
       category === 'todas'
@@ -51,7 +59,16 @@ export function QuizProvider({ children }) {
   }, []);
 
   const answerQuestion = useCallback((isCorrect) => {
-    if (isCorrect) setScore((prev) => prev + 1);
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
+      setStreak((prev) => {
+        const next = prev + 1;
+        setMaxStreak((best) => Math.max(best, next));
+        return next;
+      });
+    } else {
+      setStreak(0);
+    }
   }, []);
 
   const advanceQuestion = useCallback(() => {
@@ -66,11 +83,21 @@ export function QuizProvider({ children }) {
     setLifelinesUsed((prev) => ({ ...prev, skip: true }));
   }, []);
 
+  const finishQuiz = useCallback(() => {
+    if (startTimeRef.current) {
+      setTotalTimeMs(Date.now() - startTimeRef.current);
+    }
+  }, []);
+
   const resetQuiz = useCallback(() => {
     setCurrentQuestion(0);
     setScore(0);
     setQuizQuestions([]);
     setLifelinesUsed({ fiftyFifty: false, skip: false });
+    setStreak(0);
+    setMaxStreak(0);
+    setTotalTimeMs(0);
+    startTimeRef.current = null;
   }, []);
 
   return (
@@ -82,11 +109,15 @@ export function QuizProvider({ children }) {
         currentQuestion,
         score,
         lifelinesUsed,
+        streak,
+        maxStreak,
+        totalTimeMs,
         startQuiz,
         answerQuestion,
         advanceQuestion,
         activateFiftyFifty,
         activateSkip,
+        finishQuiz,
         resetQuiz,
       }}
     >

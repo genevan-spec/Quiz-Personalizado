@@ -1,60 +1,90 @@
-/**
- * ============================================
- * COMPONENTE: Ecrã de Resultados
- * ============================================
- * 
- * Exibe a pontuação final personalizada para o utilizador,
- * com o seu nome, percentagem, estatísticas das ajudas
- * utilizadas e botão para tentar novamente.
- * 
- * Props:
- * - playerName: nome introduzido pelo utilizador
- * - score: total de acertos
- * - total: total de perguntas jogadas
- * - lifelinesUsed: registo das ajudas gastas durante o jogo
- * - onRestart: callback para recomeçar o quiz
- */
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import Confetti from './Confetti';
 
-function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
+function useCountUp(target, duration = 1400) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setValue(Math.round(eased * target));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration]);
+  return value;
+}
+
+function formatTime(ms) {
+  if (!ms) return null;
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
+function ResultScreen({ playerName, score, total, lifelinesUsed, maxStreak, totalTimeMs, onRestart }) {
   const percentage = Math.round((score / total) * 100);
+  const displayScore = useCountUp(score);
+  const displayPct   = useCountUp(percentage);
+  const showConfetti = percentage >= 80;
 
-  /**
-   * Mensagem e emoji motivacional dependente do resultado
-   */
   const getMessage = () => {
-    if (percentage === 100) return { text: "Impressionante! Acertou tudo de forma perfeita!", emoji: "🏆" };
-    if (percentage >= 80) return { text: "Excelente conhecimento! Está de parabéns!", emoji: "🌟" };
-    if (percentage >= 50) return { text: "Bom trabalho! Teve um desempenho positivo!", emoji: "💪" };
-    return { text: "Boa tentativa! Estuda mais um pouco e volta a tentar!", emoji: "📚" };
+    if (percentage === 100) return { text: 'Impressionante! Acertaste tudo na perfeição!', emoji: '🏆' };
+    if (percentage >= 80)  return { text: 'Excelente conhecimento! Estás de parabéns!', emoji: '🌟' };
+    if (percentage >= 50)  return { text: 'Bom trabalho! Tiveste um desempenho positivo!', emoji: '💪' };
+    return { text: 'Boa tentativa! Estuda mais um pouco e volta a tentar!', emoji: '📚' };
   };
 
   const message = getMessage();
 
+  const handleShare = async () => {
+    const text = `Acabei o Quiz de Cultura Geral com ${percentage}% de aproveitamento (${score}/${total})! 🧠 Tenta tu também!`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Quiz de Cultura Geral', text });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(text);
+      toast.success('Resultado copiado para a área de transferência!', { duration: 3000 });
+    }
+  };
+
   return (
     <main className="result-screen" aria-labelledby="result-heading">
+      <Confetti active={showConfetti} />
+
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: 'rgba(30, 20, 50, 0.95)',
+            color: '#f1f5f9',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px',
+          },
+        }}
+      />
+
       <div className="result-emoji" aria-hidden="true">{message.emoji}</div>
 
       <h1 id="result-heading" className="result-title">Quiz Concluído!</h1>
-      
-      {/* Saudação Personalizada */}
+
       <p className="result-welcome">
         Parabéns, <span>{playerName}</span>!
       </p>
 
-      {/* Círculo Gráfico de Pontuação */}
+      {/* ── Círculo de pontuação animado ─────────────────────────── */}
       <div
         className="score-circle"
         role="img"
         aria-label={`Pontuação: ${score} de ${total} — ${percentage}% de aproveitamento`}
       >
         <svg viewBox="0 0 120 120" className="score-svg" aria-hidden="true">
-          <circle
-            cx="60" cy="60" r="52"
-            fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="8"
-          />
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
           <circle
             cx="60" cy="60" r="52"
             fill="none"
@@ -73,45 +103,82 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, onRestart }) {
           </defs>
         </svg>
         <div className="score-text" aria-hidden="true">
-          <span className="score-number">{score}</span>
+          <span className="score-number">{displayScore}</span>
           <span className="score-divider">/{total}</span>
         </div>
       </div>
 
-      <div className="score-percentage">{percentage}% de Aproveitamento</div>
+      <div className="score-percentage">{displayPct}% de Aproveitamento</div>
       <p className="result-message">{message.text}</p>
 
-      {/* Resumo de Ajudas Usadas */}
-      <div className="result-stats-summary" role="list" aria-label="Ajudas utilizadas">
-        <span className="result-stat-badge" role="listitem">
-          <span aria-hidden="true">⚖️</span> 50/50: {lifelinesUsed.fiftyFifty ? "Usado" : "Não Usado"}
-        </span>
-        <span className="result-stat-badge" role="listitem">
-          <span aria-hidden="true">⏭️</span> Pulo: {lifelinesUsed.skip ? "Usado" : "Não Usado"}
-        </span>
+      {/* ── Estatísticas ─────────────────────────────────────────── */}
+      <div className="result-stats-grid" role="list" aria-label="Estatísticas do jogo">
+        <div className="stat-card" role="listitem">
+          <span className="stat-icon" aria-hidden="true">🔥</span>
+          <span className="stat-value">{maxStreak}</span>
+          <span className="stat-label">Melhor streak</span>
+        </div>
+        <div className="stat-card" role="listitem">
+          <span className="stat-icon" aria-hidden="true">⚖️</span>
+          <span className="stat-value">{lifelinesUsed.fiftyFifty ? 'Usado' : '—'}</span>
+          <span className="stat-label">50/50</span>
+        </div>
+        <div className="stat-card" role="listitem">
+          <span className="stat-icon" aria-hidden="true">⏭️</span>
+          <span className="stat-value">{lifelinesUsed.skip ? 'Usado' : '—'}</span>
+          <span className="stat-label">Pulo</span>
+        </div>
+        {totalTimeMs > 0 && (
+          <div className="stat-card" role="listitem">
+            <span className="stat-icon" aria-hidden="true">⏱️</span>
+            <span className="stat-value">{formatTime(totalTimeMs)}</span>
+            <span className="stat-label">Tempo total</span>
+          </div>
+        )}
       </div>
 
-      <button
-        id="restart-quiz-btn"
-        className="btn-primary"
-        onClick={onRestart}
-        aria-label="Jogar novamente"
-      >
-        Jogar Novamente <span aria-hidden="true">🔄</span>
-      </button>
+      {/* ── Ações ────────────────────────────────────────────────── */}
+      <div className="result-actions">
+        <button
+          id="restart-quiz-btn"
+          className="btn-primary"
+          onClick={onRestart}
+          aria-label="Jogar novamente"
+        >
+          <span aria-hidden="true">🔄</span> Jogar Novamente
+        </button>
+
+        <button
+          className="btn-secondary"
+          onClick={handleShare}
+          aria-label="Partilhar resultado"
+        >
+          <span aria-hidden="true">📤</span> Partilhar
+        </button>
+      </div>
     </main>
   );
 }
 
 ResultScreen.propTypes = {
-  playerName: PropTypes.string.isRequired,
-  score: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
+  playerName:   PropTypes.string.isRequired,
+  score:        PropTypes.number.isRequired,
+  total:        PropTypes.number.isRequired,
   lifelinesUsed: PropTypes.shape({
     fiftyFifty: PropTypes.bool.isRequired,
-    skip: PropTypes.bool.isRequired,
+    skip:       PropTypes.bool.isRequired,
   }).isRequired,
-  onRestart: PropTypes.func.isRequired,
+  maxStreak:   PropTypes.number,
+  totalTimeMs: PropTypes.number,
+  onRestart:   PropTypes.func.isRequired,
+};
+
+ResultScreen.defaultProps = {
+  maxStreak:   0,
+  totalTimeMs: 0,
 };
 
 export default ResultScreen;
+
+
+
