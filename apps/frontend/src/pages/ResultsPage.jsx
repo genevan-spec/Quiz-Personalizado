@@ -47,7 +47,7 @@ function ResultsPage() {
   return (
     <>
       <Helmet>
-        <title>Resultados de {playerName} — Quiz de Cultura Geral</title>
+        <title>{`Resultados de ${playerName} — Quiz de Cultura Geral`}</title>
         <meta name="robots" content="noindex" />
       </Helmet>
 

@@ -20,41 +20,7 @@ function QuestionCard({
   const [eliminatedOptions, setEliminatedOptions] = useState([]);
   const cardRef = useRef(null);
 
-  // ── Teclado ──────────────────────────────────────────────────────────────
-  useEffect(() => {
-    const handleKey = (e) => {
-      // Não interferir quando o foco está em inputs
-      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
-      if (answered) return;
-
-      switch (e.key) {
-        case '1': handleOptionClick(0); break;
-        case '2': handleOptionClick(1); break;
-        case '3': handleOptionClick(2); break;
-        case '4': handleOptionClick(3); break;
-        case 'h':
-        case 'H':
-          if (!showHint && question.hint) {
-            setShowHint(true);
-            toast('💡 Dica revelada!', { icon: '💡', duration: 2000 });
-          }
-          break;
-        case 'f':
-        case 'F':
-          if (!lifelinesUsed.fiftyFifty) handleFiftyFiftyClick();
-          break;
-        case 's':
-        case 'S':
-          if (!lifelinesUsed.skip) handleSkipClick();
-          break;
-        default: break;
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answered, showHint, lifelinesUsed, question]);
-
+  // ── Handlers (declarados antes do useEffect que os usa) ─────────────────
   const handleFiftyFiftyClick = () => {
     if (lifelinesUsed.fiftyFifty || answered) return;
 
@@ -100,6 +66,41 @@ function QuestionCard({
     setShowHint(true);
     toast('💡 Dica revelada!', { icon: '💡', duration: 2000 });
   };
+
+  // ── Teclado ──────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const handleKey = (e) => {
+      // Não interferir quando o foco está em inputs
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (answered) return;
+
+      switch (e.key) {
+        case '1': handleOptionClick(0); break;
+        case '2': handleOptionClick(1); break;
+        case '3': handleOptionClick(2); break;
+        case '4': handleOptionClick(3); break;
+        case 'h':
+        case 'H':
+          if (!showHint && question.hint) {
+            setShowHint(true);
+            toast('💡 Dica revelada!', { icon: '💡', duration: 2000 });
+          }
+          break;
+        case 'f':
+        case 'F':
+          if (!lifelinesUsed.fiftyFifty) handleFiftyFiftyClick();
+          break;
+        case 's':
+        case 'S':
+          if (!lifelinesUsed.skip) handleSkipClick();
+          break;
+        default: break;
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answered, showHint, lifelinesUsed, question]);
 
   const getOptionClass = (index) => {
     if (eliminatedOptions.includes(index)) return 'hidden-by-lifeline';
