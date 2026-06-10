@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ambiente e segredos
+.env
+!.env.example
+!apps/backend/.env.example
+!apps/frontend/.env.example
+
+# Chaves RSA (nunca commitar chaves privadas)
+apps/backend/keys/
+
+# Prisma
+apps/backend/prisma/migrations/
+
+# Build artefacts
+apps/frontend/dist/
+
