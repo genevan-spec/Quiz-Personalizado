@@ -1,0 +1,55 @@
+// Prisma Schema — Quiz Personalizado
+// Fase 3: Fastify + Prisma + PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(50)
+  email     String   @unique @db.VarChar(255)
+  password  String   // bcrypt hash (cost 12)
+  createdAt DateTime @default(now())
+
+  scores Score[]
+}
+
+model Score {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score      Int
+  total      Int
+  percentage Float
+  category   String   @db.VarChar(100)
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([percentage(sort: Desc)])
+}
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  question      String
+  options       String[]
+  correctAnswer Int
+  explanation   String?
+  hint          String?
+  categoryId    Int
+  category      Category @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([categoryId])
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique @db.VarChar(100)
+  questions Question[]
+}

@@ -1,0 +1,89 @@
+# podman-compose.yml — Quiz Personalizado — Fase 4
+# Serviços: db (PostgreSQL 16), backend (Fastify), frontend (Nginx)
+# Utilização: podman-compose --env-file .env.container up -d
+
+version: "3.9"
+
+services:
+
+  # ── Base de dados ──────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: quiz_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-quiz_db}
+      POSTGRES_USER:     ${POSTGRES_USER:-quiz_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - quiz_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quiz_user} -d ${POSTGRES_DB:-quiz_db}"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+      start_period: 10s
+
+  # ── API Fastify ────────────────────────────────────────────────────────────
+  backend:
+    image: quiz-backend:latest
+    build:
+      context:    .
+      dockerfile: Containerfile.backend
+    container_name: quiz_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV:    production
+      PORT:        3000
+      HOST:        0.0.0.0
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:${FRONTEND_PORT:-8080}}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quiz_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-quiz_db}?schema=public
+      JWT_PRIVATE_KEY_B64: ${JWT_PRIVATE_KEY_B64}
+      JWT_PUBLIC_KEY_B64:  ${JWT_PUBLIC_KEY_B64}
+      SEED_DB: ${SEED_DB:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - quiz_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout:  10s
+      retries:  3
+      start_period: 25s
+
+  # ── Frontend Nginx ─────────────────────────────────────────────────────────
+  frontend:
+    image: quiz-frontend:latest
+    build:
+      context:    .
+      dockerfile: Containerfile.frontend
+    container_name: quiz_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - quiz_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 30s
+      timeout:  5s
+      retries:  3
+      start_period: 10s
+
+# ── Rede interna isolada ───────────────────────────────────────────────────────
+networks:
+  quiz_net:
+    driver: bridge
+    name: quiz_network
+
+# ── Volumes nomeados para persistência ────────────────────────────────────────
+volumes:
+  postgres_data:
+    name: quiz_postgres_data

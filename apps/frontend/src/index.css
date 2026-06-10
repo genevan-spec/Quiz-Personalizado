@@ -1,0 +1,135 @@
+/* ============================================
+   ESTILOS GLOBAIS
+   ============================================ */
+
+/* Importar a fonte Inter do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Reset e configurações base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Cores principais */
+  --primary: #6366f1;       /* Índigo */
+  --primary-light: #818cf8;
+  --secondary: #a855f7;     /* Roxo */
+  --accent: #ec4899;        /* Rosa */
+  
+  /* Cores de estado */
+  --correct: #22c55e;       /* Verde - resposta correta */
+  --wrong: #ef4444;         /* Vermelho - resposta errada */
+  
+  /* Cores de fundo */
+  --bg-dark: #0f0b1a;
+  --bg-card: rgba(255, 255, 255, 0.06);
+  --bg-card-hover: rgba(255, 255, 255, 0.1);
+  
+  /* Cores de texto */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  
+  /* Efeitos */
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  
+  /* Tipografia */
+  --font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ============================================
+   ACESSIBILIDADE — Utilitários
+   ============================================ */
+
+/* Visualmente oculto mas acessível a leitores de ecrã (WCAG 2.1) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visível — anel de foco acessível para navegação por teclado */
+:focus-visible {
+  outline: 3px solid var(--primary-light);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   ACESSIBILIDADE — Modo de Alto Contraste
+   ============================================ */
+
+@media (prefers-contrast: more) {
+  :root {
+    --primary: #a5b4fc;
+    --primary-light: #c7d2fe;
+    --secondary: #d8b4fe;
+    --accent: #f9a8d4;
+    --correct: #86efac;
+    --wrong: #fca5a5;
+    --bg-dark: #000000;
+    --bg-card: rgba(255, 255, 255, 0.12);
+    --bg-card-hover: rgba(255, 255, 255, 0.2);
+    --text-primary: #ffffff;
+    --text-secondary: #d1d5db;
+    --glass-border: rgba(255, 255, 255, 0.4);
+  }
+
+  body {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  button,
+  .option-btn,
+  .lifeline-btn {
+    border: 2px solid currentColor !important;
+  }
+
+  .option-btn.correct-reveal,
+  .option-btn.selected.correct {
+    outline: 3px solid var(--correct);
+  }
+
+  .option-btn.selected.wrong {
+    outline: 3px solid var(--wrong);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE — Reduzir movimento
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
