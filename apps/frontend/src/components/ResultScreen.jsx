@@ -26,7 +26,7 @@ function formatTime(ms) {
   return `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
-function ResultScreen({ playerName, score, total, lifelinesUsed, maxStreak, totalTimeMs, onRestart }) {
+function ResultScreen({ playerName, score, total, lifelinesUsed, maxStreak, totalTimeMs, scoreSaved, isLoggedIn, onRestart, onSaveScore }) {
   const percentage = Math.round((score / total) * 100);
   const displayScore = useCountUp(score);
   const displayPct   = useCountUp(percentage);
@@ -137,6 +137,30 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, maxStreak, tota
         )}
       </div>
 
+      {/* ── Score CTA ────────────────────────────────────────────── */}
+      <div className="result-score-cta" aria-live="polite">
+        {isLoggedIn && scoreSaved && (
+          <p className="score-saved-badge">
+            <span aria-hidden="true">✅</span> Score guardado no leaderboard!
+          </p>
+        )}
+        {isLoggedIn && !scoreSaved && (
+          <p className="score-saving-badge">
+            <span className="score-saving-spinner" aria-hidden="true" /> A guardar score…
+          </p>
+        )}
+        {!isLoggedIn && (
+          <button
+            type="button"
+            className="btn-save-score"
+            onClick={onSaveScore}
+            aria-label="Faz login ou cria conta para guardar o teu score no leaderboard"
+          >
+            <span aria-hidden="true">🔑</span> Guardar score no leaderboard
+          </button>
+        )}
+      </div>
+
       {/* ── Ações ────────────────────────────────────────────────── */}
       <div className="result-actions">
         <button
@@ -170,12 +194,18 @@ ResultScreen.propTypes = {
   }).isRequired,
   maxStreak:   PropTypes.number,
   totalTimeMs: PropTypes.number,
+  scoreSaved:  PropTypes.bool,
+  isLoggedIn:  PropTypes.bool,
   onRestart:   PropTypes.func.isRequired,
+  onSaveScore: PropTypes.func,
 };
 
 ResultScreen.defaultProps = {
   maxStreak:   0,
   totalTimeMs: 0,
+  scoreSaved:  false,
+  isLoggedIn:  false,
+  onSaveScore: () => {},
 };
 
 export default ResultScreen;

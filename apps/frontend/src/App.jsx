@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { QuizProvider, useQuiz } from './context/QuizContext';
+import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import HomePage from './pages/HomePage';
 import QuizPage from './pages/QuizPage';
@@ -43,9 +44,11 @@ function App() {
     <HelmetProvider>
       <ErrorBoundary>
         <BrowserRouter>
-          <QuizProvider>
-            <ThemedLayout />
-          </QuizProvider>
+          <AuthProvider>
+            <QuizProvider>
+              <ThemedLayout />
+            </QuizProvider>
+          </AuthProvider>
         </BrowserRouter>
       </ErrorBoundary>
     </HelmetProvider>
