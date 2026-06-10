@@ -11,9 +11,16 @@
     "dev:backend": "yarn workspace backend dev",
     "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\"",
     "build": "yarn workspace frontend build",
-    "lint": "yarn workspaces run lint"
+    "lint": "yarn workspaces run lint",
+    "test": "yarn workspace frontend test && yarn workspace backend test",
+    "test:frontend": "yarn workspace frontend test",
+    "test:backend": "yarn workspace backend test",
+    "test:coverage": "yarn workspace frontend test:coverage && yarn workspace backend test:coverage",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@playwright/test": "^1.60.0",
+    "concurrently": "^9.1.2",
+    "playwright": "^1.60.0"
   }
 }

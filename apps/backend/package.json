@@ -24,6 +24,9 @@
     "fastify-plugin": "^5.0.1"
   },
   "devDependencies": {
-    "prisma": "^6.9.0"
+    "@vitest/coverage-v8": "^4.1.8",
+    "prisma": "^6.9.0",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.8"
   }
 }

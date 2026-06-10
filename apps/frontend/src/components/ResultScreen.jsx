@@ -154,7 +154,6 @@ function ResultScreen({ playerName, score, total, lifelinesUsed, maxStreak, tota
             type="button"
             className="btn-save-score"
             onClick={onSaveScore}
-            aria-label="Faz login ou cria conta para guardar o teu score no leaderboard"
           >
             <span aria-hidden="true">🔑</span> Guardar score no leaderboard
           </button>
