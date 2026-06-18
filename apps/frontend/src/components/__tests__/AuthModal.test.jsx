@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import AuthModal from '../AuthModal';
 import { AuthProvider } from '../../context/AuthContext';
 
-// Stub api module so tests don't hit a real server
-vi.mock('../../lib/api', () => ({
+// Stub ao módulo api para que os testes não façam pedidos HTTP reais
+jest.mock('../../lib/api', () => ({
   api: {
-    post: vi.fn(),
+    post: jest.fn(),
   },
 }));
 
@@ -16,14 +16,14 @@ import { api } from '../../lib/api';
 function renderModal(props = {}) {
   return render(
     <AuthProvider>
-      <AuthModal onClose={vi.fn()} {...props} />
+      <AuthModal onClose={jest.fn()} {...props} />
     </AuthProvider>
   );
 }
 
 describe('AuthModal', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     localStorage.clear();
   });
 
@@ -45,10 +45,10 @@ describe('AuthModal', () => {
   });
 
   it('closes on Escape key', async () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     renderModal({ onClose });
     await userEvent.keyboard('{Escape}');
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('shows API error when login fails', async () => {
@@ -63,7 +63,7 @@ describe('AuthModal', () => {
   });
 
   it('calls onClose after successful login', async () => {
-    const onClose = vi.fn();
+    const onClose = jest.fn();
     api.post.mockResolvedValueOnce({ token: 'tok', user: { id: 1, username: 'u', email: 'u@test.com' } });
     renderModal({ onClose });
 
@@ -71,6 +71,6 @@ describe('AuthModal', () => {
     await userEvent.type(screen.getByLabelText(/password/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

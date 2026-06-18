@@ -1,17 +1,17 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
-// ── vi.hoisted garante que mockDb está disponível na factory do vi.mock ────
-const mockDb = vi.hoisted(() => ({
+// ── mockDb é definido antes do jest.mock ser hoisted para o topo do ficheiro
+const mockDb = {
   user: {
-    findFirst:  vi.fn(),
-    findUnique: vi.fn(),
-    create:     vi.fn(),
+    findFirst: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
   },
-  $connect:    vi.fn().mockResolvedValue(undefined),
-  $disconnect: vi.fn().mockResolvedValue(undefined),
-}));
+  $connect: jest.fn().mockResolvedValue(undefined),
+  $disconnect: jest.fn().mockResolvedValue(undefined),
+};
 
-vi.mock('@prisma/client', () => ({
+jest.mock('@prisma/client', () => ({
   PrismaClient: class {
     constructor() { return mockDb; }
   },
@@ -24,7 +24,7 @@ describe('POST /api/auth/register', () => {
   let app;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     app = buildApp({ logger: false });
     await app.ready();
   });
@@ -73,6 +73,15 @@ describe('POST /api/auth/register', () => {
     });
     expect(res.statusCode).toBe(400);
   });
+
+  it('retorna 400 quando a password é demasiado curta', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/register',
+      payload: { username: 'Smilley', email: 'smilley@test.com', password: '123' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
 });
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -80,7 +89,7 @@ describe('POST /api/auth/login', () => {
   let app;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     app = buildApp({ logger: false });
     await app.ready();
   });
@@ -98,6 +107,25 @@ describe('POST /api/auth/login', () => {
 
     expect(res.statusCode).toBe(401);
     expect(res.json().error).toMatch(/inválidas/i);
+  });
+
+  it('retorna 200 com token quando credenciais válidas', async () => {
+    const bcrypt = await import('bcryptjs');
+    const hash = await bcrypt.default.hash('password123', 4);
+    mockDb.user.findUnique.mockResolvedValue({
+      id: 7, username: 'Smilley', email: 'smilley@test.com', password: hash,
+    });
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: { email: 'smilley@test.com', password: 'password123' },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.token).toBeTruthy();
+    expect(body.user).toMatchObject({ id: 7, username: 'Smilley' });
   });
 
   it('retorna 400 para payload inválido', async () => {
