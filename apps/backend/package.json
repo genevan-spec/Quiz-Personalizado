@@ -7,9 +7,9 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "lint": "eslint src/",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
@@ -27,7 +27,12 @@
     "fastify-plugin": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.1",
     "@vitest/coverage-v8": "^4.1.8",
+    "babel-jest": "^30.4.1",
+    "babel-plugin-transform-import-meta": "^2.3.3",
+    "jest": "^30.4.2",
     "prisma": "^6.9.0",
     "supertest": "^7.2.2",
     "vitest": "^4.1.8"

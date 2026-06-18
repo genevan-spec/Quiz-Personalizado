@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, jest } from '@jest/globals';
 import ResultScreen from '../ResultScreen';
 
-// react-hot-toast requires a DOM — stub Toaster
-vi.mock('react-hot-toast', async (importOriginal) => {
-  const mod = await importOriginal();
-  return { ...mod, Toaster: () => null };
+// react-hot-toast requer DOM real para o Toaster — stub para simplificar
+jest.mock('react-hot-toast', () => {
+  const actual = jest.requireActual('react-hot-toast');
+  return { ...actual, Toaster: () => null };
 });
 
 const BASE_PROPS = {
@@ -15,7 +16,7 @@ const BASE_PROPS = {
   lifelinesUsed: { fiftyFifty: false, skip: true },
   maxStreak: 4,
   totalTimeMs: 45000,
-  onRestart: vi.fn(),
+  onRestart: jest.fn(),
 };
 
 describe('ResultScreen', () => {
@@ -26,7 +27,7 @@ describe('ResultScreen', () => {
 
   it('displays total correctly', () => {
     render(<ResultScreen {...BASE_PROPS} />);
-    // "/10" appears in the animated score area
+    // "/10" aparece na área de pontuação animada
     expect(screen.getByText('/10')).toBeInTheDocument();
   });
 
@@ -46,10 +47,9 @@ describe('ResultScreen', () => {
   });
 
   it('calls onRestart when button is clicked', async () => {
-    const onRestart = vi.fn();
-    const { getByRole } = render(<ResultScreen {...BASE_PROPS} onRestart={onRestart} />);
-    const { userEvent } = await import('@testing-library/user-event');
-    await userEvent.click(getByRole('button', { name: /jogar novamente/i }));
-    expect(onRestart).toHaveBeenCalledOnce();
+    const onRestart = jest.fn();
+    render(<ResultScreen {...BASE_PROPS} onRestart={onRestart} />);
+    await userEvent.click(screen.getByRole('button', { name: /jogar novamente/i }));
+    expect(onRestart).toHaveBeenCalledTimes(1);
   });
 });
